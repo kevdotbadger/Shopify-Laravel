@@ -27,7 +27,7 @@ class ShopifyServiceProvider extends ServiceProvider {
 	public function register()
 	{
 		$this->app->bind('shopify', function(){
-			return new \Shopify\Shopify;
+			return new \Kevdotbadger\Shopify\Shopify;
 		});
 	}
 	   

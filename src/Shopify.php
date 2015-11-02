@@ -13,22 +13,13 @@ class Shopify {
 	
 	function __construct() {
 		
-		if( !Config::has('shopify') ){
-			throw new \Exception("Config file does not exist.");
-		}
-			
-		if( !Config::has('shopify.auth.api_key') ){
+		$this->setApiKey(Config::get('shopify.auth.api_key', function(){
 			throw new \Exception("Api Key not set in config.");
-		}
+		}));
 			
-		$this->setApiKey(Config::get('shopify.auth.api_key'));
-		
-			
-		if( !Config::has('shopify.auth.secret') ){
+		$this->setSecret(Config::get('shopify.auth.secret', function(){
 			throw new \Exception("Secret Key not set in config.");
-		}
-			
-		$this->setSecret(Config::get('shopify.auth.secret'));
+		}));
 				
 	}
 	
@@ -75,7 +66,7 @@ class Shopify {
 	/**
 	 * Get the application's Secret
 	 *
-	 * @return void
+	 * @return string
 	 * @author Kevin Ruscoe
 	 */
 	function getSecret() {
@@ -86,7 +77,7 @@ class Shopify {
 	 * Set the application's Shop name
 	 *
 	 * @param string $shop 
-	 * @return void
+	 * @return Shopify
 	 * @author Kevin Ruscoe
 	 */
 	function setShop($shop) {
@@ -100,7 +91,7 @@ class Shopify {
 	/**
 	 * Get the application's Shop name
 	 *
-	 * @return void
+	 * @return mixed
 	 * @author Kevin Ruscoe
 	 */
 	function getShop() {
@@ -135,7 +126,7 @@ class Shopify {
 	 * Turn a shop name into a shop URI
 	 *
 	 * @param string $input 
-	 * @return void
+	 * @return string
 	 * @author Kevin Ruscoe
 	 */
 	public static function shopNameToUri($shop_name)
@@ -147,7 +138,7 @@ class Shopify {
 	 * Set the token to make API requests with
 	 *
 	 * @param string $token 
-	 * @return void
+	 * @return Shopify
 	 * @author Kevin Ruscoe
 	 */
 	function setToken($token) {
@@ -237,6 +228,12 @@ class Shopify {
 		
 	}
 	
+	/**
+	 * Return array of default headers
+	 *
+	 * @return array
+	 * @author Kevin Ruscoe
+	 */
 	private function getHeaders()
 	{
 		return [
@@ -245,6 +242,14 @@ class Shopify {
 		];
 	}
 	
+	/**
+	 * Return a fully resolved path to the API call
+	 *
+	 * @param string $url 
+	 * @param string $options 
+	 * @return string
+	 * @author Kevin Ruscoe
+	 */
 	private function getFullyResolvedPath($url, $options = null)
 	{
 		
@@ -256,10 +261,18 @@ class Shopify {
 		
 	}
 	
-	public function get($url, $options = null)
+	/**
+	 * Perform a GET request to a URI
+	 *
+	 * @param string $url 
+	 * @param array $options 
+	 * @return Object
+	 * @author Kevin Ruscoe
+	 */
+	public function get($uri, $options = null)
 	{
 		
-		$url = $this->getFullyResolvedPath($url, $options);
+		$url = $this->getFullyResolvedPath($uri, $options);
 				
 		$client = (new Guzzle)->get($url, [
 			'headers' => $this->getHeaders()
@@ -269,10 +282,19 @@ class Shopify {
 		
 	}
 	
-	public function post($url, $body = null, $options = null)
+	/**
+	 * Perform a POST request to a URI
+	 *
+	 * @param string $uri 
+	 * @param string $body 
+	 * @param array $options 
+	 * @return Object
+	 * @author Kevin Ruscoe
+	 */
+	public function post($uri, $body = null, $options = null)
 	{
 				
-		$url = $this->getFullyResolvedPath($url, $options);
+		$url = $this->getFullyResolvedPath($uri, $options);
 								
 		$client = (new Guzzle)->post($url, [
 			'headers' => $this->getHeaders(),
@@ -283,10 +305,19 @@ class Shopify {
 		
 	}
 	
-	public function put($url, $body = null, $options = null)
+	/**
+	 * Perform a PUT request to a uri
+	 *
+	 * @param string $uri 
+	 * @param string $body 
+	 * @param array $options 
+	 * @return Object
+	 * @author Kevin Ruscoe
+	 */
+	public function put($uri, $body = null, $options = null)
 	{
 				
-		$url = $this->getFullyResolvedPath($url, $options);
+		$url = $this->getFullyResolvedPath($uri, $options);
 								
 		$client = (new Guzzle)->put($url, [
 			'headers' => $this->getHeaders(),
@@ -297,10 +328,17 @@ class Shopify {
 		
 	}
 	
-	public function delete($url)
+	/**
+	 * Perform a DELETE request to a uri
+	 *
+	 * @param string $uri 
+	 * @return void
+	 * @author Kevin Ruscoe
+	 */
+	public function delete($uri)
 	{
 				
-		$url = $this->getFullyResolvedPath($url, $options);
+		$url = $this->getFullyResolvedPath($uri, $options);
 								
 		$client = (new Guzzle)->delete($url, [
 			'headers' => $this->getHeaders(),

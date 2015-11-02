@@ -1,0 +1,17 @@
+{
+	"name": "kevdotbadger/shopify",
+	"authors": [
+		{
+			"name": "Kevin Ruscoe",
+			"email": "meh"
+		},
+	],
+	"require": {
+		"guzzlehttp/guzzle": "6.*"
+	},
+	"autoload": {
+		"psr-4": {
+			"Shopify\\": "src/"
+		}
+	}
+}

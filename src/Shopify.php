@@ -1,0 +1,315 @@
+<?php
+
+namespace Shopify;
+
+use GuzzleHttp\Client as Guzzle;
+use Session;
+use Config;
+
+class Shopify {
+	
+	private $api_key;
+	private $secret;
+	
+	function __construct() {
+		
+		if( !Config::has('shopify') ){
+			throw new \Exception("Config file does not exist.");
+		}
+			
+		if( !Config::has('shopify.auth.api_key') ){
+			throw new \Exception("Api Key not set in config.");
+		}
+			
+		$this->setApiKey(Config::get('shopify.auth.api_key'));
+		
+			
+		if( !Config::has('shopify.auth.secret') ){
+			throw new \Exception("Secret Key not set in config.");
+		}
+			
+		$this->setSecret(Config::get('shopify.auth.secret'));
+				
+	}
+	
+	/**
+	 * Set the application's API Key
+	 *
+	 * @param string $api_key 
+	 * @return Shopify
+	 * @author Kevin Ruscoe
+	 */
+	function setApiKey($api_key) {
+	
+		$this->api_key = $api_key;
+		 
+		return $this;
+		
+	}
+	
+	/**
+	 * Get the application's API Key
+	 *
+	 * @return string
+	 * @author Kevin Ruscoe
+	 */
+	function getApiKey() {
+		return $this->api_key;
+	}
+	
+	/**
+	 * Set the application's Secret
+	 *
+	 * @param string $secret 
+	 * @return Shopify
+	 * @author Kevin Ruscoe
+	 */
+	function setSecret($secret) {
+	
+		$this->secret = $secret;
+		 
+		return $this;
+		
+	}
+	
+	/**
+	 * Get the application's Secret
+	 *
+	 * @return void
+	 * @author Kevin Ruscoe
+	 */
+	function getSecret() {
+		return $this->secret;
+	}
+	
+	/**
+	 * Set the application's Shop name
+	 *
+	 * @param string $shop 
+	 * @return void
+	 * @author Kevin Ruscoe
+	 */
+	function setShop($shop) {
+		
+		Session::set('shopify.shop', $shop);
+		 
+		return $this;
+		
+	}
+	
+	/**
+	 * Get the application's Shop name
+	 *
+	 * @return void
+	 * @author Kevin Ruscoe
+	 */
+	function getShop() {
+		return Session::get('shopify.shop', function(){
+			throw new \Exception('A shop has not been specified');
+		});
+	}
+	
+	/**
+	 * Get the shop name from the full URI
+	 *
+	 * @param string $input 
+	 * @return string
+	 * @author Kevin Ruscoe
+	 */
+	public static function uriToShopName($input)
+	{
+		
+		$input = str_replace(['http', 'https', '://'], '', $input);
+		
+		$regex = "/(.+).myshopify.com/"; 
+ 
+		if( !preg_match($regex, $input, $matches) ){
+			return $input;
+		}
+				
+		return $matches[1];
+		
+	}
+	
+	/**
+	 * Turn a shop name into a shop URI
+	 *
+	 * @param string $input 
+	 * @return void
+	 * @author Kevin Ruscoe
+	 */
+	public static function shopNameToUri($shop_name)
+	{
+		return sprintf("%s.myshopify.com", $shop_name);
+	}
+	
+	/**
+	 * Set the token to make API requests with
+	 *
+	 * @param string $token 
+	 * @return void
+	 * @author Kevin Ruscoe
+	 */
+	function setToken($token) {
+	
+		Session::set('shopify.token', $token);
+		 
+		return $this;
+		
+	}
+	
+	/**
+	 * Get the token to make API requests with, if a $code is passed it will request a token from Shopify's Auth server
+	 *
+	 * @param string $code 
+	 * @return mixed
+	 * @author Kevin Ruscoe
+	 */
+	function getToken() {
+		
+		return Session::get('shopify.token', function(){
+			throw new \Exception('A token does not exist.');
+		});
+		
+	}
+	
+	/**
+	 * Turn a temporary code into a useable token from Shopify
+	 *
+	 * @param string $code 
+	 * @return string
+	 * @author Kevin Ruscoe
+	 */
+	public function requestToken($code)
+	{
+		
+		try {
+			
+			$client = (new Guzzle)->post(
+				sprintf("https://%s.myshopify.com/admin/oauth/access_token", $this->getShop()),
+				[
+					'form_params' => ([
+						'client_secret' => $this->getSecret(),
+						'client_id'     => $this->getApiKey(),
+						'code'          => $code
+					])
+				]
+			);
+			
+		}catch(\Exception $e){
+			throw new \Exception(sprintf("Couldn't get access token (%s)", $e->getMessage()));
+		}
+		
+		$body = json_decode($client->getBody());
+		
+		$token = $body->access_token;
+		
+		$this->setToken($token);
+		
+		return $this->getToken();
+				
+	}
+	
+	/**
+	 * Create an installer URL to instal lthis application
+	 *
+	 * @param array  $scopes 
+	 * @param string $redirect_uri
+	 * @return string
+	 * @author Kevin Ruscoe
+	 */
+	public function getInstallUrl($scopes, $redirect_uri = null)
+	{
+		
+		$shop = self::uriToShopName($this->getShop());
+		$api_key = $this->getApiKey();
+		
+		$url = sprintf(
+			"https://%s.myshopify.com/admin/oauth/authorize?client_id=%s&scope=%s",
+			$shop, $api_key, implode($scopes, ",")
+		);
+		
+		if( !is_null($redirect_uri) ){
+			$url .= sprintf("&redirect_uri=%s", $redirect_uri);
+		}
+		
+		return $url;
+		
+	}
+	
+	private function getHeaders()
+	{
+		return [
+			'X-Shopify-Access-Token' => $this->getToken(),
+			'Content-Type'           => 'application/json'
+		];
+	}
+	
+	private function getFullyResolvedPath($url, $options = null)
+	{
+		
+		$querystring = (!is_null($options)) ? http_build_query($options) : '';
+		
+		return sprintf("https://%s/admin/%s?%s",
+			self::shopNameToUri($this->getShop()), $url, $querystring
+		);
+		
+	}
+	
+	public function get($url, $options = null)
+	{
+		
+		$url = $this->getFullyResolvedPath($url, $options);
+				
+		$client = (new Guzzle)->get($url, [
+			'headers' => $this->getHeaders()
+		]);
+
+		return json_decode((string)$client->getBody());
+		
+	}
+	
+	public function post($url, $body = null, $options = null)
+	{
+				
+		$url = $this->getFullyResolvedPath($url, $options);
+								
+		$client = (new Guzzle)->post($url, [
+			'headers' => $this->getHeaders(),
+			'body'  => json_encode($body)
+		]);
+
+		return json_decode((string)$client->getBody());
+		
+	}
+	
+	public function put($url, $body = null, $options = null)
+	{
+				
+		$url = $this->getFullyResolvedPath($url, $options);
+								
+		$client = (new Guzzle)->put($url, [
+			'headers' => $this->getHeaders(),
+			'body'  => json_encode($body)
+		]);
+
+		return json_decode((string)$client->getBody());
+		
+	}
+	
+	public function delete($url)
+	{
+				
+		$url = $this->getFullyResolvedPath($url, $options);
+								
+		$client = (new Guzzle)->delete($url, [
+			'headers' => $this->getHeaders(),
+		]);
+
+		return json_decode((string)$client->getBody());
+		
+	}
+	
+}
+
+?>

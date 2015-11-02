@@ -1,6 +1,6 @@
 <?php
 
-namespace Shopify\Providers;
+namespace Kevdotbadger\Shopify\Providers;
 
 use Illuminate\Support\ServiceProvider;
 

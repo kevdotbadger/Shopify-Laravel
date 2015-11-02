@@ -1,6 +1,6 @@
 <?php
 
-namespace Shopify;
+namespace Kevdotbadger\Shopify;
 
 use GuzzleHttp\Client as Guzzle;
 use Session;

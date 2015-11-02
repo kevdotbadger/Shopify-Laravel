@@ -1,6 +1,6 @@
 <?php
 
-namespace Shopify\Facades;
+namespace Kevdotbadger\Shopify\Facades;
 
 use Illuminate\Support\Facades\Facade;
 

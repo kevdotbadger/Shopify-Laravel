@@ -10,7 +10,8 @@ class Shopify {
 	
 	private $api_key;
 	private $secret;
-	
+	private $password;
+		
 	function __construct() {
 		
 		$this->setApiKey(Config::get('shopify.auth.api_key', function(){
@@ -20,7 +21,46 @@ class Shopify {
 		$this->setSecret(Config::get('shopify.auth.secret', function(){
 			throw new \Exception("Secret Key not set in config.");
 		}));
+		
+		if( Config::has('shopify.auth.password') ){
+			$this->setPassword(Config::get('shopify.auth.password'));
+		}
 				
+	}
+	
+	/**
+	 * Set the API password, setting this will force the API to use the private method (non-oAuth)
+	 *
+	 * @param string $password 
+	 * @return Shopify
+	 * @author Kevin Ruscoe
+	 */
+	function setPassword($password) {
+	
+		$this->password = $password;
+		 
+		return $this;
+		
+	}
+	
+	/**
+	 * Get the API password
+	 *
+	 * @return string
+	 * @author Kevin Ruscoe
+	 */
+	function getPassword() {
+		return $this->password;
+	}
+	
+	/**
+	 * Returns if the API should use the private API call, or oAuth
+	 *
+	 * @return bool
+	 * @author Kevin Ruscoe
+	 */
+	public function isPrivate() {
+		return isset($this->password);
 	}
 	
 	/**
@@ -254,6 +294,12 @@ class Shopify {
 	{
 		
 		$querystring = (!is_null($options)) ? http_build_query($options) : '';
+		
+		if( $this->isPrivate() ){
+			return sprintf("https://%s:%s@%s/admin/%s?%s",
+				$this->getApiKey(), $this->getPassword(), self::shopNameToUri($this->getShop()), $url, $querystring
+			);
+		}
 		
 		return sprintf("https://%s/admin/%s?%s",
 			self::shopNameToUri($this->getShop()), $url, $querystring

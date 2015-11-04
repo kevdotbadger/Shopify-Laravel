@@ -1,28 +1,26 @@
-# Quickquide
+# Quickguide
 
-Add `Kevdotbadger\Shopify\Providers\ShopifyServiceProvider.php` to your providers array, and `'Shopify' => Kevdotbadger\Shopify\Facades\Shopify::class` to your aliases array.
+* Add `Kevdotbadger\Shopify\Providers\ShopifyServiceProvider.php` to your providers array.
+* Add `'Shopify' => Kevdotbadger\Shopify\Facades\Shopify::class` to your aliases array.
+* Run `php artisan vendor:publish --provider="Kevdotbadger\Shopify\Providers\ShopifyServiceProvider" --tag="config"` to create a shopify.php config file, and fill out the API vars (defaults to looking in the .env file).
 
-Run `php artisan vendor:publish --provider="Kevdotbadger\Shopify\Providers\ShopifyServiceProvider" --tag="config"` to create a shopify.php config file, and fill out the API vars.
+To install an app (redirect the user to the install page), setup a route like /auth/redirect with:
 
-Use something like
-
-		Shopify::setShop('myshop');
+	Shopify::setShop('myshop');
 				
-		$install_url = Shopify::getInstallUrl([
-			'write_orders', 'read_orders',
-			'write_products', 'read_products',
-			'write_content', 'read_content',
-		]);
+	$install_url = Shopify::getInstallUrl([
+		'write_orders', 'read_orders',
+		'write_products', 'read_products',
+		'write_content', 'read_content',
+	]);
 		
-		return redirect($install_url);		
+	return redirect($install_url);		
 
-to install an app, then 
+Once the user has accepted the Shopify install T+C, and are redirected back to your app, simply request the `code` $_GET variable and turn it into a token to make API calls.
 
 	$code = $request->get('code');
 	
 	Shopify::requestToken($code);
-
-to turn a code into a token used to make API calls.
 
 Then do stuff like `Shopify::get('products.json')` to call the shopify API.
 

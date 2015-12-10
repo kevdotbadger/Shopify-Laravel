@@ -6,6 +6,9 @@ use GuzzleHttp\Client as Guzzle;
 use Session;
 use Config;
 
+use Kevdotbadger\Shopify\Exceptions\ShopifyAuthException;
+use Kevdotbadger\Shopify\Exceptions\ShopifyConfigException;
+
 class Shopify {
 	
 	private $api_key;
@@ -15,11 +18,11 @@ class Shopify {
 	function __construct() {
 		
 		$this->setApiKey(Config::get('shopify.auth.api_key', function(){
-			throw new \Exception("Api Key not set in config.");
+			throw new ShopifyConfigException("Api Key not set in config.");
 		}));
 			
 		$this->setSecret(Config::get('shopify.auth.secret', function(){
-			throw new \Exception("Secret Key not set in config.");
+			throw new ShopifyConfigException("Secret Key not set in config.");
 		}));
 		
 		if( Config::has('shopify.auth.password') ){
@@ -136,7 +139,7 @@ class Shopify {
 	 */
 	function getShop() {
 		return Session::get('shopify.shop', function(){
-			throw new \Exception('A shop has not been specified');
+			throw new ShopifyAuthException('A shop has not been specified');
 		});
 	}
 	
@@ -199,7 +202,7 @@ class Shopify {
 	function getToken() {
 		
 		return Session::get('shopify.token', function(){
-			throw new \Exception('A token does not exist.');
+			throw new ShopifyAuthException('A token does not exist.');
 		});
 		
 	}
@@ -228,7 +231,7 @@ class Shopify {
 			);
 			
 		}catch(\Exception $e){
-			throw new \Exception(sprintf("Couldn't get access token (%s)", $e->getMessage()));
+			throw new ShopifyAuthException(sprintf("Couldn't get access token (%s)", $e->getMessage()));
 		}
 		
 		$body = json_decode($client->getBody());
@@ -384,7 +387,7 @@ class Shopify {
 	public function delete($uri)
 	{
 				
-		$url = $this->getFullyResolvedPath($uri, $options);
+		$url = $this->getFullyResolvedPath($uri);
 								
 		$client = (new Guzzle)->delete($url, [
 			'headers' => $this->getHeaders(),

@@ -15,7 +15,7 @@ class ShopifyController extends Controller
 
     protected $redirectTo = "/";
 
-    public function redirect(Request $request){
+    protected function redirect(Request $request){
 
         $this->validate($request, 
             [
@@ -40,11 +40,11 @@ class ShopifyController extends Controller
 
     }
     
-    public function install(){
+    protected function install(){
         return view('auth.shopify.install');     
     }
 
-    public function callback(Request $request){
+    protected function callback(Request $request){
         
         $code = $request->get('code');
 
@@ -54,7 +54,7 @@ class ShopifyController extends Controller
 
     }
 
-    public function logout(){
+    protected function logout(){
         
         Session::flush();
         

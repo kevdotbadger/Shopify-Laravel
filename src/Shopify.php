@@ -30,6 +30,21 @@ class Shopify {
 		}
 	
 	}
+
+	/**
+	 * Add package routes
+	 * 
+	 * @return null
+	 * @author Kevin Ruscoe
+	 */
+	function routes(){
+
+		app('router')->get('auth/shopify/install', ['uses' => '\Kevdotbadger\Shopify\Controllers\Auth\ShopifyController@install']);
+		app('router')->post('auth/shopify/install', ['uses' => '\Kevdotbadger\Shopify\Controllers\Auth\ShopifyController@redirect', 'as' => 'auth.shopify.install']);
+		app('router')->get('auth/shopify/callback', ['uses' => '\Kevdotbadger\Shopify\Controllers\Auth\ShopifyController@callback', 'as' => 'auth.shopify.callback']);
+		app('router')->get('auth/shopify/logout', ['uses' => '\Kevdotbadger\Shopify\Controllers\Auth\ShopifyController@logout', 'as' => 'auth.shopify.logout']);
+
+	}
 	
 	/**
 	 * Set the API password, setting this will force the API to use the private method (non-oAuth)

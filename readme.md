@@ -24,7 +24,7 @@ Once the user has accepted the Shopify install T+C, and are redirected back to y
 
 Then do stuff like `Shopify::get('products.json')` to call the shopify API.
 
-It also comes with with 4 routes at `auth\shopify\`. Change `auto_register_routes` to false in the config to make our own. 
+The package also comes with a sample controller and routes. Add `Shopify::routes()` to your routes file to add them. 
 
 ### todo
 

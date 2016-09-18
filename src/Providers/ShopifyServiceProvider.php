@@ -18,10 +18,10 @@ class ShopifyServiceProvider extends ServiceProvider {
 			__DIR__.'/../config/shopify.php' => config_path('shopify.php'),
 		], 'config');
 
-		app('router')->get('auth/shopify/install', ['uses' => '\Kevdotbadger\Shopify\Controllers\Auth\AuthController@install']);
-		app('router')->post('auth/shopify/install', ['uses' => '\Kevdotbadger\Shopify\Controllers\Auth\AuthController@redirect', 'as' => 'auth.shopify.install']);
-		app('router')->get('auth/shopify/callback', ['uses' => '\Kevdotbadger\Shopify\Controllers\Auth\AuthController@callback', 'as' => 'auth.shopify.callback']);
-		app('router')->get('auth/shopify/logout', ['uses' => '\Kevdotbadger\Shopify\Controllers\Auth\AuthController@logout', 'as' => 'auth.shopify.logout']);
+		app('router')->get('auth/shopify/install', ['uses' => '\Kevdotbadger\Shopify\Controllers\Auth\ShopifyController@install']);
+		app('router')->post('auth/shopify/install', ['uses' => '\Kevdotbadger\Shopify\Controllers\Auth\ShopifyController@redirect', 'as' => 'auth.shopify.install']);
+		app('router')->get('auth/shopify/callback', ['uses' => '\Kevdotbadger\Shopify\Controllers\Auth\ShopifyController@callback', 'as' => 'auth.shopify.callback']);
+		app('router')->get('auth/shopify/logout', ['uses' => '\Kevdotbadger\Shopify\Controllers\Auth\ShopifyController@logout', 'as' => 'auth.shopify.logout']);
 		
 	}
 	

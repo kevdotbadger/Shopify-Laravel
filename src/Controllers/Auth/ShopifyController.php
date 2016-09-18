@@ -9,7 +9,7 @@ use App\Http\Requests;
 use Shopify;
 use Session;
 
-class AuthController extends Controller
+class ShopifyController extends Controller
 {
 
     protected $redirectTo = "/";

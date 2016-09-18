@@ -11,7 +11,9 @@ return [
 		'secret'  => env('SHOPIFY_SECRET'),
 		
 		// Your API Password. If this is set, all API calls will be made using the "Prvate API" method (i.e. the non-oAuth way)
-		'password' => env('SHOPIFY_PASSWORD')
+		'password' => env('SHOPIFY_PASSWORD'),
+
+		'auto_register_routes' => true,
 			
 	]
 

@@ -9,7 +9,6 @@ use App\Http\Controllers\Controller;
 use Shopify;
 use Session;
 
-
 class ShopifyAuthController extends Controller
 {
 

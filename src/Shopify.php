@@ -41,12 +41,23 @@ class Shopify {
 	 */
 	function routes(){
 
-		Route::group(['prefix' => 'auth/shopify', 'namespace' => '\Kevdotbadger\Shopify\Controllers'], function(){
+		Route::group(['prefix' => 'auth/shopify'], function(){
 
-			Route::get('install', ['uses' => 'ShopifyAuthController@install']);
-			Route::post('install', ['uses' => 'ShopifyAuthController@redirect', 'as' => 'auth.shopify.install']);
-			Route::get('callback', ['uses' => 'ShopifyAuthController@callback', 'as' => 'auth.shopify.callback']);
-			Route::get('logout', ['uses' => 'ShopifyAuthController@logout', 'as' => 'auth.shopify.logout']);
+			Route::get('install', [
+				'uses' => '\Kevdotbadger\Shopify\Controllers\ShopifyAuthController@install'
+			]);
+			
+			Route::post('install', [
+				'uses' => '\Kevdotbadger\Shopify\Controllers\ShopifyAuthController@redirect', 'as' => 'auth.shopify.install'
+			]);
+
+			Route::get('callback', [
+				'uses' => '\Kevdotbadger\Shopify\Controllers\ShopifyAuthController@callback', 'as' => 'auth.shopify.callback'
+			]);
+
+			Route::get('logout', [
+				'uses' => '\Kevdotbadger\Shopify\Controllers\ShopifyAuthController@logout', 'as' => 'auth.shopify.logout'
+			]);
 
 		});
 
@@ -150,6 +161,16 @@ class Shopify {
 		 
 		return $this;
 		
+	}
+
+	/**
+	 * Has the application's Shop name been set
+	 *
+	 * @return bool
+	 * @author Kevin Ruscoe
+	 */
+	function hasShop() {
+		return Session::has('shopify.shop');
 	}
 	
 	/**

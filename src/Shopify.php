@@ -48,12 +48,8 @@ class Shopify {
 			Route::get('callback', ['uses' => 'ShopifyAuthController@callback', 'as' => 'auth.shopify.callback']);
 			Route::get('logout', ['uses' => 'ShopifyAuthController@logout', 'as' => 'auth.shopify.logout']);
 
-
 		});
 
-		app('route')
-
-		
 	}
 	
 	/**

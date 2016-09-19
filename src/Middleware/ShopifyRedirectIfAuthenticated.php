@@ -17,8 +17,8 @@ class ShopifyRedirectIfAuthenticated
     public function handle($request, Closure $next)
     {
         
-        if (!Session::has('shopify')) {
-            return redirect(route('auth.install'))->with(['error' => 'Please login.']);
+        if ( ! Session::has('shopify') ){
+            return redirect(route('auth.shopify.install'))->with(['error' => 'Please login.']);
         }
 
         return $next($request);

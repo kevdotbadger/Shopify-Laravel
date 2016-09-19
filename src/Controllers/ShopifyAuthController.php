@@ -1,6 +1,6 @@
 <?php
 
-namespace Kevdotbadger\Shopify\Controllers\Auth;
+namespace Kevdotbadger\Shopify\Controllers;
 
 use Illuminate\Http\Request;
 
@@ -10,7 +10,7 @@ use Shopify;
 use Session;
 
 
-class ShopifyController extends Controller
+class ShopifyAuthController extends Controller
 {
 
     protected $redirectTo = "/";

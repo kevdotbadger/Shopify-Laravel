@@ -6,6 +6,8 @@ use GuzzleHttp\Client as Guzzle;
 use Session;
 use Config;
 
+use Illuminate\Support\Facades\Route;
+
 use Kevdotbadger\Shopify\Exceptions\ShopifyAuthException;
 use Kevdotbadger\Shopify\Exceptions\ShopifyConfigException;
 
@@ -39,11 +41,19 @@ class Shopify {
 	 */
 	function routes(){
 
-		app('router')->get('auth/shopify/install', ['uses' => '\Kevdotbadger\Shopify\Controllers\Auth\ShopifyController@install']);
-		app('router')->post('auth/shopify/install', ['uses' => '\Kevdotbadger\Shopify\Controllers\Auth\ShopifyController@redirect', 'as' => 'auth.shopify.install']);
-		app('router')->get('auth/shopify/callback', ['uses' => '\Kevdotbadger\Shopify\Controllers\Auth\ShopifyController@callback', 'as' => 'auth.shopify.callback']);
-		app('router')->get('auth/shopify/logout', ['uses' => '\Kevdotbadger\Shopify\Controllers\Auth\ShopifyController@logout', 'as' => 'auth.shopify.logout']);
+		Route::group(['prefix' => 'auth/shopify', 'namespace' => '\Kevdotbadger\Shopify\Controllers'], function(){
 
+			Route::get('install', ['uses' => 'ShopifyAuthController@install']);
+			Route::post('install', ['uses' => 'ShopifyAuthController@redirect', 'as' => 'auth.shopify.install']);
+			Route::get('callback', ['uses' => 'ShopifyAuthController@callback', 'as' => 'auth.shopify.callback']);
+			Route::get('logout', ['uses' => 'ShopifyAuthController@logout', 'as' => 'auth.shopify.logout']);
+
+
+		});
+
+		app('route')
+
+		
 	}
 	
 	/**

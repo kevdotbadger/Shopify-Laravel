@@ -44,11 +44,11 @@ class Shopify {
 		Route::group(['prefix' => 'auth/shopify'], function(){
 
 			Route::get('install', [
-				'uses' => '\Kevdotbadger\Shopify\Controllers\ShopifyAuthController@install'
+				'uses' => '\Kevdotbadger\Shopify\Controllers\ShopifyAuthController@install', 'as' => 'auth.shopify.install'
 			]);
 			
 			Route::post('install', [
-				'uses' => '\Kevdotbadger\Shopify\Controllers\ShopifyAuthController@redirect', 'as' => 'auth.shopify.install'
+				'uses' => '\Kevdotbadger\Shopify\Controllers\ShopifyAuthController@redirect', 'as' => 'auth.shopify.redirect'
 			]);
 
 			Route::get('callback', [

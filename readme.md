@@ -1,33 +1,27 @@
 # Quickguide
 
-* Add `Kevdotbadger\Shopify\Providers\ShopifyServiceProvider.php` to your providers array.
-* Add `'Shopify' => Kevdotbadger\Shopify\Facades\Shopify::class` to your aliases array.
-* Run `php artisan vendor:publish --provider="Kevdotbadger\Shopify\Providers\ShopifyServiceProvider" --tag="config"` to create a shopify.php config file, and fill out the API vars (defaults to looking in the .env file).
+* Add `Shopify\Providers\ShopifyServiceProvider::class,` to your providers array.
+* Run `php artisan vendor:publish --provider="Shopify\Providers\ShopifyServiceProvider" --tag="config"` to create a shopify.php config file, and fill out the API vars (defaults to looking in the .env file).
 
 To install an app (redirect the user to the install page), setup a route like /auth/redirect with:
 
-	Shopify::setShop('myshop');
-				
-	$install_url = Shopify::getInstallUrl([
-		'write_orders', 'read_orders',
-		'write_products', 'read_products',
-		'write_content', 'read_content',
-	]);
-		
-	return redirect($install_url);		
+```php
+$url = $auth->asShop('kevinruscoe')
+		->withScopes(['read_products', 'write_products'])
+		->redirectingTo(route('auth.callback'))
+		->requestAccess();
 
-Once the user has accepted the Shopify install T+C, and are redirected back to your app, simply request the `code` $_GET variable and turn it into a token to make API calls.
+return redirect(url($url));		
+```
 
-	$code = $request->get('code');
-	
-	Shopify::requestToken($code);
+Once the user has accepted the Shopify install T+C, and are redirected back to your app, in that route (like /auth/callback) do
 
-Then do stuff like `Shopify::get('products.json')` to call the shopify API.
+```php
+$token = $auth->requestAccessToken($request);
 
-The package also comes with a sample controller and routes. Add `Shopify::routes()` to your routes file to add them. 
+return redirect(url('products'));
+```
 
-### todo
+Now, any controller that needs Shopify, add the `HasShopify` trait, then you can do somthing like
 
-* better docs ;)
-* validate all requests
-* allow users to use this library to make private requests (non oAuth requests)
+`$this->shopify()->Product->all()`

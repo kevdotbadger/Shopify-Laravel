@@ -7,11 +7,11 @@
 		}
 	],
 	"require": {
-		"guzzlehttp/guzzle": "6.*"
+		"ezdeliveryco/snorlax": "dev-master"
 	},
 	"autoload": {
 		"psr-4": {
-			"Kevdotbadger\\Shopify\\": "src/"
+			"Shopify\\": "src/"
 		}
 	}
 }

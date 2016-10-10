@@ -5,8 +5,10 @@ namespace Shopify;
 use Illuminate\Http\Request;
 use GuzzleHttp\Client;
 
-use Shopify\Stores\APICredentials;
-use Shopify\Stores\SessionToken;
+use Shopify\Interfaces\APICredentialsStore;
+use Shopify\Interfaces\TokenStore;
+
+use Shopify\HmacRequestValidator;
 
 class Authenticator {
 
@@ -18,7 +20,7 @@ class Authenticator {
     private $redirect_to;
     private $scopes = [];
 
-    function __construct(Client $client, APICredentials $APICredentials, SessionToken $tokenStore){
+    function __construct(Client $client, APICredentialsStore $APICredentials, TokenStore $tokenStore){
         $this->APICredentials = $APICredentials;
         $this->tokenStore = $tokenStore;
         $this->client = $client;
@@ -47,7 +49,7 @@ class Authenticator {
         return $this;
     }
 
-    function requestAccess(){
+    function requestInstallationUrl(){
 
         $url = "https://{$this->tokenStore->getShop()}.myshopify.com/admin/oauth/authorize?";
 

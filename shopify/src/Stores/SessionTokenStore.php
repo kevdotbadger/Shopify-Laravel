@@ -5,7 +5,7 @@ namespace Shopify\Stores;
 use Session;
 use Shopify\Interfaces\TokenStore;
 
-class SessionToken implements TokenStore { 
+class SessionTokenStore implements TokenStore { 
 
     public function setShop($shop){
         Session::set('shopify.shop', $shop);

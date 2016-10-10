@@ -1,0 +1,17 @@
+{
+	"name": "kevdotbadger/shopify",
+	"authors": [
+		{
+			"name": "Kevin Ruscoe",
+			"email": "kevdotbadger+github@gmail.com"
+		}
+	],
+	"require": {
+		"ezdeliveryco/snorlax": "dev-master"
+	},
+	"autoload": {
+		"psr-4": {
+			"Shopify\\": "src/"
+		}
+	}
+}

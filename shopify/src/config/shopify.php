@@ -13,6 +13,10 @@ return [
 		// Your API Password. If this is set, all API calls will be made using the "Prvate API" method (i.e. the non-oAuth way)
 		'password' => env('SHOPIFY_PASSWORD')
 			
+	],
+
+	'resources' => [
+		
 	]
 
 ];
